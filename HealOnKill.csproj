@@ -1,84 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- ==========================
-       CONFIGURAÇÕES GERAIS
-       ========================== -->
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+
+  <!-- Propriedades gerais -->
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+          Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform>x64</Platform>
     <ProjectGuid>{C37F3C85-E063-4161-B9EE-5A0D54E69074}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HealOnKill</RootNamespace>
     <AssemblyName>HealOnKill</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <!-- Evita erros de RID -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
-  <!-- ==========================
-       RELEASE x64
-       ========================== -->
+
+  <!-- Configuração Release -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <!-- Mesmo padrão do Bannerlord -->
     <OutputPath>bin\Win64_Shipping_Client\</OutputPath>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <!-- ==========================
-       REFERÊNCIAS ATUALIZADAS
-       Bannerlord v1.3.7 (102919)
-       ========================== -->
+
+  <!-- Referências do Bannerlord -->
   <ItemGroup>
-    <!-- .NET base -->
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <!-- DLLs essenciais usadas pelo mod -->
+
     <Reference Include="TaleWorlds.DotNet">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.DotNet.dll</HintPath>
       <Private>false</Private>
     </Reference>
+
     <Reference Include="TaleWorlds.Library">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
       <Private>false</Private>
     </Reference>
+
     <Reference Include="TaleWorlds.Core">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
+
     <Reference Include="TaleWorlds.Engine">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll</HintPath>
       <Private>false</Private>
     </Reference>
+
     <Reference Include="TaleWorlds.MountAndBlade">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
       <Private>false</Private>
     </Reference>
+
+    <Reference Include="TaleWorlds.GauntletUI">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
-  <!-- ==========================
-       ARQUIVOS NÃO COMPILADOS
-       ========================== -->
+
+  <!-- Referências do MCM v5 -->
+  <ItemGroup>
+    <Reference Include="MCMv5">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="MCM.UI.Adapter.MCMv5">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCM.UI.Adapter.MCMv5.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Arquivos não compilados -->
   <ItemGroup>
     <None Include="SubModule.xml" />
     <None Include="PreviewImage.jpg" />
   </ItemGroup>
-  <!-- ==========================
-       CÓDIGO-FONTE
-       ========================== -->
+
+  <!-- Código-fonte -->
   <ItemGroup>
     <Compile Include="Source\HealOnKill\HealOnKillBehavior.cs" />
-    <Compile Include="Source\HealOnKill\HealOnKillConfig.cs" />
     <Compile Include="Source\HealOnKill\HealOnKillSubModule.cs" />
+    <Compile Include="Source\HealOnKill\HealOnKillSettings.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="ModuleData\HealOnKillConfig.xml" />
-  </ItemGroup>
+
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

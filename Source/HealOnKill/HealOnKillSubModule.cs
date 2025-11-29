@@ -1,32 +1,24 @@
-﻿using System.IO;
-using TaleWorlds.Core;
-using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade;
+﻿using TaleWorlds.MountAndBlade;
 
 namespace HealOnKill
 {
     public class HealOnKillSubModule : MBSubModuleBase
     {
-        private HealOnKillConfig _config;
-
         protected override void OnSubModuleLoad()
         {
             base.OnSubModuleLoad();
-
-            string path = Path.Combine(
-                BasePath.Name,
-                "Modules",
-                "HealOnKill",
-                "ModuleData",
-                "HealOnKillConfig.xml");
-
-            _config = HealOnKillConfig.Load(path);
+            // Nada para carregar — MCM gerencia salvamento/carregamento automaticamente.
         }
 
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             base.OnMissionBehaviorInitialize(mission);
-            mission.AddMissionBehavior(new HealOnKillBehavior(_config));
+
+            // Obtém as configurações ativas do MCM
+            var settings = HealOnKillSettings.Instance;
+
+            // Injeta o comportamento na missão
+            mission.AddMissionBehavior(new HealOnKillBehavior(settings));
         }
     }
 }

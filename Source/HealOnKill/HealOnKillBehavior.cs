@@ -7,16 +7,15 @@ namespace HealOnKill
 {
     public class HealOnKillBehavior : MissionLogic
     {
-        private readonly HealOnKillConfig _config;
+        private readonly HealOnKillSettings _config;
         private Team _playerTeam;
 
-        // Defaults de cor (ARGB)
         private const uint DefaultPlayerLogColor = 0xFF00FF00; // green
         private const uint DefaultTroopLogColor = 0xFF00B7FF;  // cyan/blue
 
-        public HealOnKillBehavior(HealOnKillConfig config)
+        public HealOnKillBehavior(HealOnKillSettings config)
         {
-            _config = config ?? new HealOnKillConfig();
+            _config = config ?? HealOnKillSettings.Instance;
         }
 
         public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
@@ -27,7 +26,9 @@ namespace HealOnKill
             _playerTeam = Mission?.MainAgent?.Team;
         }
 
-        // Roubo de vida baseado no dano
+        // ============================
+        // LIFE LEECH POR DANO
+        // ============================
         public override void OnScoreHit(
             Agent affectedAgent, Agent affectorAgent,
             WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit,
@@ -37,49 +38,7 @@ namespace HealOnKill
             if (!_config.EnableMod)
                 return;
 
-            if (_config.HealOnlyOnKill)
-                return;
-
             ProcessHit(affectorAgent, affectedAgent, blow, in collisionData);
-        }
-
-        // Cura extra ao matar
-        public override void OnAgentRemoved(Agent victim, Agent attacker, AgentState state, KillingBlow killingBlow)
-        {
-            if (!_config.EnableMod)
-                return;
-
-            if (attacker == null || victim == null)
-                return;
-
-            if (!attacker.IsHuman)
-                return;
-
-            if (state != AgentState.Killed)
-                return;
-
-            if (!attacker.IsEnemyOf(victim))
-                return;
-
-            if (attacker.Health <= 0f || attacker.HealthLimit <= 0f)
-                return;
-
-            bool isPlayer = attacker.IsMainAgent || attacker.IsPlayerControlled;
-            bool isFriendly = IsFriendly(attacker);
-            bool allowNpcHeal = _config.AllowNpcHeal && !isPlayer && isFriendly;
-
-            if (!(isPlayer || allowNpcHeal))
-                return;
-
-            float killPct = Clamp01(_config.KillHealPercent);
-            float heal = MathF.Max(1f, attacker.HealthLimit * killPct);
-
-            if (isPlayer)
-                heal += MathF.Max(0f, _config.PlayerExtraHeal);
-            else
-                heal += MathF.Max(0f, _config.TroopExtraHeal);
-
-            ApplyHeal(attacker, heal, HealReason.Kill, inflictedDamage: 0);
         }
 
         private void ProcessHit(Agent attacker, Agent victim, in Blow blow, in AttackCollisionData collisionData)
@@ -104,22 +63,23 @@ namespace HealOnKill
 
             bool isPlayer = attacker.IsMainAgent || attacker.IsPlayerControlled;
             bool isFriendly = IsFriendly(attacker);
-            bool allowNpcHeal = _config.AllowNpcHeal && !isPlayer && isFriendly;
 
-            if (!(isPlayer || allowNpcHeal))
+            bool allowTroopHeal = _config.AllowNpcHeal && !isPlayer && isFriendly;
+
+            if (!(isPlayer || allowTroopHeal))
                 return;
 
-            float leechPct = Clamp01(_config.LifeLeechPercent);
-            float heal = blow.InflictedDamage * leechPct;
+            float pct = _config.GetLifeLeechFor(isPlayer);
+            pct = Clamp01(pct);
 
-            if (isPlayer)
-                heal += MathF.Max(0f, _config.PlayerExtraHeal);
-            else
-                heal += MathF.Max(0f, _config.TroopExtraHeal);
+            float heal = blow.InflictedDamage * pct;
 
-            ApplyHeal(attacker, heal, HealReason.Leech, inflictedDamage: blow.InflictedDamage);
+            ApplyHeal(attacker, heal, inflictedDamage: blow.InflictedDamage);
         }
 
+        // ============================
+        // CHECAR TIME ALIADO
+        // ============================
         private bool IsFriendly(Agent agent)
         {
             if (agent == null || agent.Team == null)
@@ -136,7 +96,10 @@ namespace HealOnKill
                    (agent.Team.IsPlayerTeam || agent.Team.IsPlayerAlly);
         }
 
-        private void ApplyHeal(Agent agent, float amount, HealReason reason, int inflictedDamage)
+        // ============================
+        // APLICAR CURA
+        // ============================
+        private void ApplyHeal(Agent agent, float amount, int inflictedDamage)
         {
             if (agent == null || amount <= 0f || agent.Health <= 0f)
                 return;
@@ -157,57 +120,35 @@ namespace HealOnKill
                 return;
 
             bool isPlayer = agent.IsMainAgent || agent.IsPlayerControlled;
-            uint colorUint = isPlayer
-                ? _config.GetPlayerLogColorOr(DefaultPlayerLogColor)
-                : _config.GetTroopLogColorOr(DefaultTroopLogColor);
 
-            string tag = reason == HealReason.Kill ? "Kill Heal" : "Life Steal";
+            uint color = isPlayer ? DefaultPlayerLogColor : DefaultTroopLogColor;
 
-            // Exemplo:
-            // Player +3.2 HP (Life Steal, dmg 21) -> 45.0/55.0
-            // Legionary +2.0 HP (Kill Heal) -> 38.0/52.0
-            string msg;
+            string msg = string.Format(
+                "{0} +{1:0.#} HP (Life Steal, dmg {2}) -> {3:0.#}/{4:0.#}",
+                SafeName(agent),
+                gained,
+                inflictedDamage,
+                after,
+                agent.HealthLimit
+            );
 
-            if (reason == HealReason.Leech)
-            {
-                msg = string.Format(
-                    "{0} +{1:0.#} HP ({2}, dmg {3}) -> {4:0.#}/{5:0.#}",
-                    SafeName(agent),
-                    gained,
-                    tag,
-                    inflictedDamage,
-                    after,
-                    agent.HealthLimit
-                );
-            }
-            else
-            {
-                msg = string.Format(
-                    "{0} +{1:0.#} HP ({2}) -> {3:0.#}/{4:0.#}",
-                    SafeName(agent),
-                    gained,
-                    tag,
-                    after,
-                    agent.HealthLimit
-                );
-            }
-
-            InformationManager.DisplayMessage(new InformationMessage(msg, Color.FromUint(colorUint)));
+            InformationManager.DisplayMessage(
+                new InformationMessage(msg, Color.FromUint(color))
+            );
         }
 
+        // ============================
+        // LOGGING CONFIG
+        // ============================
         private bool ShouldLog(Agent agent)
         {
-            // Compatibilidade:
-            // - Se o usuário só tiver ShowFeedback=true (config antiga), loga tudo.
-            // - Se tiver LogPlayer/LogTroops (config nova), usa os toggles separados.
-            bool legacy = _config.ShowFeedback && !_config.LogPlayer && !_config.LogTroops;
-            if (legacy)
-                return true;
-
             bool isPlayer = agent.IsMainAgent || agent.IsPlayerControlled;
             return isPlayer ? _config.LogPlayer : _config.LogTroops;
         }
 
+        // ============================
+        // UTILS
+        // ============================
         private static float Clamp01(float v)
         {
             if (v < 0f) return 0f;
@@ -226,12 +167,6 @@ namespace HealOnKill
             {
                 return "Unit";
             }
-        }
-
-        private enum HealReason
-        {
-            Leech,
-            Kill
         }
     }
 }
