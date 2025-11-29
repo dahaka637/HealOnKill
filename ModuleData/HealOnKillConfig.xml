@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HealOnKillConfig>
+	<!-- Master enable -->
+	<EnableMod>true</EnableMod>
+
+	<!-- Percentage of inflicted damage converted into healing (0.15 = 15%) -->
+	<LifeLeechPercent>0.15</LifeLeechPercent>
+
+	<!-- Percentage of maximum health restored when killing an enemy -->
+	<KillHealPercent>0.15</KillHealPercent>
+
+	<!-- Should allied troops also receive healing? true/false -->
+	<AllowNpcHeal>true</AllowNpcHeal>
+
+	<!-- If true, healing only happens on kill (no life leech on damage) -->
+	<HealOnlyOnKill>false</HealOnlyOnKill>
+
+	<!-- Global toggle for in-game chat messages -->
+	<ShowFeedback>true</ShowFeedback>
+
+	<!-- New: separate log toggles -->
+	<LogPlayer>true</LogPlayer>
+	<LogTroops>false</LogTroops>
+
+	<!-- Additional flat healing -->
+	<TroopExtraHeal>0.0</TroopExtraHeal>
+	<PlayerExtraHeal>0.0</PlayerExtraHeal>
+
+	<!-- Colors (ARGB hex). Examples:
+       PlayerLogColor = FF00FF00 (green)
+       TroopLogColor  = FF00B7FF (cyan/blue)
+  -->
+	<PlayerLogColor>FF00FF00</PlayerLogColor>
+	<TroopLogColor>FF00B7FF</TroopLogColor>
+</HealOnKillConfig>

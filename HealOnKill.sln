@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealOnKill", "HealOnKill.csproj", "{C37F3C85-E063-4161-B9EE-5A0D54E69074}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C37F3C85-E063-4161-B9EE-5A0D54E69074}.Release|x64.ActiveCfg = Release|x64
+		{C37F3C85-E063-4161-B9EE-5A0D54E69074}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		        SolutionGuid = {EF074C6D-EEE2-454E-A287-6D1FF9E0CBD7}
+	EndGlobalSection
+EndGlobal

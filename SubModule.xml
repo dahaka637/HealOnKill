@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Module>
+    <Name value="Heal On Kill"/>
+    <Id value="HealOnKill"/>
+    <Version value="v1.2.0"/>
+
+    <SingleplayerModule value="true"/>
+    <MultiplayerModule value="false"/>
+    <Official value="false"/>
+    <DefaultModule value="false"/>
+
+    <!-- Dependências atualizadas para Bannerlord v1.3.7.102919 -->
+    <DependedModules>
+        <DependedModule Id="Native"        DependentVersion="v1.3.7.102919" Optional="false"/>
+        <DependedModule Id="SandBoxCore"   DependentVersion="v1.3.7.102919" Optional="false"/>
+        <DependedModule Id="Sandbox"       DependentVersion="v1.3.7.102919" Optional="false"/>
+        <DependedModule Id="StoryMode"     DependentVersion="v1.3.7.102919" Optional="true"/>
+    </DependedModules>
+
+    <SubModules>
+        <SubModule>
+            <Name value="Heal On Kill - Core"/>
+            <DLLName value="HealOnKill.dll"/>
+            <SubModuleClassType value="HealOnKill.HealOnKillSubModule"/>
+            <Tags>
+                <Tag key="DedicatedServerType" value="none"/>
+                <Tag key="IsNoRenderModeElement" value="false"/>
+            </Tags>
+        </SubModule>
+    </SubModules>
+
+    <Xmls/>
+</Module>
